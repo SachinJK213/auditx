@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: auditx-llm
+  threads:
+    virtual:
+      enabled: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/auditx}
+      auto-index-creation: true
+
+server:
+  port: ${LLM_PORT:8084}
+
+auditx:
+  llm:
+    provider: ${LLM_PROVIDER:openai}
+    api-key: ${LLM_API_KEY:placeholder}
+    azure-endpoint: ${AZURE_OPENAI_ENDPOINT:}
+    azure-deployment: ${AZURE_OPENAI_DEPLOYMENT:gpt-4o-mini}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+  endpoint:
+    health:
+      show-details: always

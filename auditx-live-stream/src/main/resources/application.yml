@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: auditx-live-stream
+  threads:
+    virtual:
+      enabled: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+server:
+  port: ${LIVE_STREAM_PORT:8089}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  structured:
+    format:
+      console: logstash

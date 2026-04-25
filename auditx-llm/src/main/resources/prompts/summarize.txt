@@ -1,0 +1,4 @@
+You are a security operations analyst. Summarize the following security alerts for tenant {tenantId} in a concise executive summary (3-5 sentences). Highlight the most critical patterns and recommended actions.
+
+Alerts:
+{alerts}

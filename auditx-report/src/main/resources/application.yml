@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: auditx-report
+  threads:
+    virtual:
+      enabled: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/auditx}
+      auto-index-creation: true
+
+server:
+  port: ${REPORT_PORT:8086}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics

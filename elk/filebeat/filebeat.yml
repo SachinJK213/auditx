@@ -1,0 +1,38 @@
+filebeat.inputs:
+  - type: container
+    paths:
+      - /var/lib/docker/containers/*/*.log
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+      - decode_json_fields:
+          fields: ["message"]
+          target: ""
+          overwrite_keys: true
+          add_error_key: false
+
+# Only forward logs from AUDITX services
+processors:
+  - drop_event:
+      when:
+        not:
+          or:
+            - contains:
+                container.name: "auditx-gateway"
+            - contains:
+                container.name: "auditx-ingestion"
+            - contains:
+                container.name: "auditx-parser"
+            - contains:
+                container.name: "auditx-risk-engine"
+            - contains:
+                container.name: "auditx-llm"
+            - contains:
+                container.name: "auditx-alert"
+            - contains:
+                container.name: "auditx-report"
+
+output.logstash:
+  hosts: ["${LOGSTASH_HOST:logstash:5044}"]
+
+logging.level: warning

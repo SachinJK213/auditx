@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: auditx-alert
+  threads:
+    virtual:
+      enabled: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/auditx}
+      auto-index-creation: true
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: alert-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.auditx.common.dto"
+        spring.json.value.default.type: "com.auditx.common.dto.AlertDto"
+
+server:
+  port: ${ALERT_PORT:8085}
+
+auditx:
+  escalation:
+    check-interval-ms: ${ESCALATION_CHECK_INTERVAL_MS:300000}
+    l1-timeout-minutes: ${L1_TIMEOUT_MINUTES:15}
+    l2-timeout-minutes: ${L2_TIMEOUT_MINUTES:30}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics

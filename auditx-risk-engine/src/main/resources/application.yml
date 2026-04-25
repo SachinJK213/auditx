@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: auditx-risk-engine
+  threads:
+    virtual:
+      enabled: true
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/auditx}
+      auto-index-creation: true
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: risk-engine-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.auditx.common.dto"
+        spring.json.value.default.type: "com.auditx.common.dto.StructuredEventDto"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+server:
+  port: ${RISK_ENGINE_PORT:8083}
+
+auditx:
+  risk:
+    failed-login-window-minutes: ${FAILED_LOGIN_WINDOW_MINUTES:60}
+    failed-login-threshold: ${FAILED_LOGIN_THRESHOLD:5}
+    geo-anomaly-lookback-days: ${GEO_ANOMALY_LOOKBACK_DAYS:30}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+  endpoint:
+    health:
+      show-details: always

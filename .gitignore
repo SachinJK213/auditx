@@ -1,0 +1,32 @@
+# Secrets / local config
+.env
+.env.*
+!.env.example
+
+# Maven / Java
+**/target/
+**/*.log
+**/.classpath
+**/.project
+**/.settings/
+
+# Node / React
+**/node_modules/
+**/build/
+**/dist/
+**/.npm/
+**/.cache/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+
+# Test reports / coverage
+**/surefire-reports/
+**/failsafe-reports/
+**/jacoco.exec
+**/site/
+

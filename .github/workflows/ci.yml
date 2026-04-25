@@ -1,0 +1,90 @@
+name: AuditX CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+
+  # ── Unit tests (no Docker) ─────────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run unit tests
+        run: mvn test --no-transfer-progress -Dtest="!*IntegrationTest"
+
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-coverage
+          path: '**/target/site/jacoco/'
+
+  # ── Integration tests (Testcontainers spins up real deps) ─────────────────
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run integration tests
+        run: |
+          mvn test --no-transfer-progress \
+            -Dtest="IngestionPipelineIntegrationTest,ParserPipelineIntegrationTest,LiveStreamIntegrationTest" \
+            -pl auditx-common,auditx-ingestion,auditx-parser,auditx-live-stream -am
+
+  # ── E2E regression (full docker compose stack) ────────────────────────────
+  e2e-tests:
+    name: E2E Regression
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Start full stack
+        run: |
+          docker compose up --build -d
+          echo "Waiting for services to be healthy..."
+          sleep 60
+
+      - name: Check all services UP
+        run: bash test/e2e/00_health_check.sh
+
+      - name: Seed demo data
+        run: bash demo/seed-demo-data.sh
+
+      - name: Wait for pipeline to settle
+        run: sleep 10
+
+      - name: Run E2E suite
+        run: bash test/e2e/run_all.sh
+
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs --tail=50
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v
+

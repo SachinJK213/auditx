@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: auditx-gateway
+  threads:
+    virtual:
+      enabled: true
+  cloud:
+    gateway:
+      routes:
+        - id: ingestion-route
+          uri: ${INGESTION_SERVICE_URI:http://localhost:8081}
+          predicates:
+            - Path=/api/events/**
+        - id: llm-route
+          uri: ${LLM_SERVICE_URI:http://localhost:8084}
+          predicates:
+            - Path=/api/llm/**
+        - id: report-route
+          uri: ${REPORT_SERVICE_URI:http://localhost:8086}
+          predicates:
+            - Path=/api/reports/**
+      default-filters:
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: ${RATE_LIMIT_REPLENISH:10}
+            redis-rate-limiter.burstCapacity: ${RATE_LIMIT_BURST:20}
+            redis-rate-limiter.requestedTokens: 1
+            key-resolver: "#{@tenantKeyResolver}"
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+server:
+  port: ${GATEWAY_PORT:8080}
+
+auditx:
+  jwt:
+    public-key-path: ${JWT_PUBLIC_KEY_PATH:classpath:keys/public.pem}
+    jwks-uri: ${JWT_JWKS_URI:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics
+  endpoint:
+    health:
+      show-details: always
