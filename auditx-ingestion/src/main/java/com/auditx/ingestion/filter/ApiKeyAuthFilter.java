@@ -25,7 +25,8 @@ public class ApiKeyAuthFilter implements WebFilter {
     private static final String TENANT_ID_ATTR = "X-Tenant-Id";
     private static final Set<String> PROTECTED_PREFIXES = Set.of(
             "/api/events/raw",
-            "/api/v1/ingest/upload"
+            "/api/v1/ingest/upload",
+            "/webhook/sources"
     );
 
     private final TenantRepository tenantRepository;

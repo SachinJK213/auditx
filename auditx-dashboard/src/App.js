@@ -212,7 +212,7 @@ function EventsTable({ rows, loading }) {
       <div style={{ overflowX: 'auto', maxHeight: 460, overflowY: 'auto' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead><tr>
-            {['Time', 'User', 'Action', 'Source IP', 'Outcome', 'Risk'].map(h =>
+            {['Time', 'User', 'Action', 'Source IP', 'Country', 'Outcome', 'Risk'].map(h =>
               <th key={h} style={th}>{h}</th>)}
           </tr></thead>
           <tbody>
@@ -229,6 +229,11 @@ function EventsTable({ rows, loading }) {
                   <td style={td({ fontWeight: 600 })}>{e.userId || '—'}</td>
                   <td style={td({ color: C.accent })}>{e.action || '—'}</td>
                   <td style={td({ color: C.muted, fontFamily: 'monospace', fontSize: 12 })}>{e.sourceIp || '—'}</td>
+                  <td style={td({ fontSize: 11 })}>
+                    {e.country
+                      ? <span style={{ color: C.muted }}>{e.countryCode} {e.city}</span>
+                      : <span style={{ color: C.dim }}>—</span>}
+                  </td>
                   <td style={td()}>
                     <span style={{
                       color: e.outcome === 'SUCCESS' ? C.ok : C.err,
@@ -887,6 +892,117 @@ function SourcesPanel() {
   );
 }
 
+// ─── PII Tab ──────────────────────────────────────────────────────────────────
+const PII_COLORS = {
+  EMAIL:       C.accent,
+  AADHAAR:     C.err,
+  PAN:         C.warn,
+  PHONE_IN:    C.purple,
+  CREDIT_CARD: C.err,
+  SSN:         C.err,
+};
+
+function PiiTab({ tenant }) {
+  const [summary,  setSummary]  = useState(null);
+  const [findings, setFindings] = useState([]);
+  const [loading,  setLoading]  = useState(true);
+
+  useEffect(() => {
+    if (!tenant) return;
+    setLoading(true);
+    Promise.all([
+      fetch(`/pii/api/pii/summary?tenantId=${encodeURIComponent(tenant)}&days=30`),
+      fetch(`/pii/api/pii/findings?tenantId=${encodeURIComponent(tenant)}&days=7`),
+    ])
+      .then(async ([sr, fr]) => {
+        if (sr.ok) setSummary(await sr.json());
+        if (fr.ok) setFindings(await fr.json());
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [tenant]);
+
+  const th = {
+    padding: '10px 14px', textAlign: 'left', fontWeight: 700, color: C.muted,
+    fontSize: 10, letterSpacing: '0.8px', textTransform: 'uppercase',
+    borderBottom: `1px solid ${C.border}`, whiteSpace: 'nowrap', background: C.bg,
+  };
+  const td = (extra = {}) => ({
+    padding: '10px 14px', borderBottom: `1px solid ${C.border}22`, ...extra,
+  });
+
+  if (loading) return <EmptyState icon="⏳" msg="Loading PII findings…" />;
+
+  return (
+    <div style={{ padding: 20 }}>
+      {/* Warning notice */}
+      <div style={{
+        background: `${C.warn}11`, border: `1px solid ${C.warn}44`,
+        borderRadius: 8, padding: '10px 14px', marginBottom: 18,
+        fontSize: 12, color: C.warn, display: 'flex', alignItems: 'center', gap: 8,
+      }}>
+        <span>⚠</span>
+        PII events are flagged — review and redact before sharing logs.
+      </div>
+
+      {/* Summary stat card */}
+      <div style={{ marginBottom: 18 }}>
+        <StatCard
+          icon="🔍"
+          label="Events with PII Detected"
+          value={summary?.eventsWithPii ?? '—'}
+          color={C.err}
+          sub="Last 30 days"
+        />
+      </div>
+
+      {/* Findings table */}
+      {!findings.length ? (
+        <EmptyState icon="✅" msg="No PII findings for this period." />
+      ) : (
+        <div style={{ overflowX: 'auto', maxHeight: 460, overflowY: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <thead><tr>
+              {['Time', 'Event ID', 'PII Types Found', 'Match Count'].map(h =>
+                <th key={h} style={th}>{h}</th>)}
+            </tr></thead>
+            <tbody>
+              {findings.map((f, i) => (
+                <tr key={f.eventId || i} style={{ background: i % 2 === 0 ? C.bg : C.surface }}>
+                  <td style={td({ color: C.muted, fontSize: 11, whiteSpace: 'nowrap' })}>
+                    {f.timestamp ? new Date(f.timestamp).toLocaleString() : '—'}
+                  </td>
+                  <td style={td({ fontFamily: 'monospace', fontSize: 11, color: C.dim })}>
+                    {f.eventId ? f.eventId.slice(0, 16) : '—'}
+                  </td>
+                  <td style={td()}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                      {(f.piiTypes || []).map(type => (
+                        <span key={type} style={{
+                          background: `${PII_COLORS[type] || C.muted}1a`,
+                          color: PII_COLORS[type] || C.muted,
+                          border: `1px solid ${PII_COLORS[type] || C.muted}44`,
+                          borderRadius: 4, padding: '2px 7px',
+                          fontSize: 10, fontWeight: 700, letterSpacing: '0.4px',
+                        }}>
+                          {type}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td style={td({ fontFamily: 'monospace', fontWeight: 700, color: C.warn })}>
+                    {f.matchCount ?? '—'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   const [tenant,  setTenant]  = useState('tenant-demo');
@@ -1042,6 +1158,11 @@ export default function App() {
             }
             sub="0 – 100 scale"
           />
+          <StatCard
+            icon="🔍" label="PII Detections"
+            value={loading ? '…' : (s.piiEvents ?? '—')}
+            color={C.err} sub="Events with PII found"
+          />
         </div>
 
         {/* ── Body grid ── */}
@@ -1066,6 +1187,7 @@ export default function App() {
               </Pill>
               <Pill active={tab === 'upload'}  onClick={() => setTab('upload')}  color={C.purple}>Upload</Pill>
               <Pill active={tab === 'sources'} onClick={() => setTab('sources')} color={C.accent2}>Sources</Pill>
+              <Pill active={tab === 'pii'} onClick={() => setTab('pii')} color={C.err}>PII Scan</Pill>
             </div>
 
             {/* Tab content */}
@@ -1074,6 +1196,7 @@ export default function App() {
             {tab === 'alerts'  && <AlertsTable rows={alerts} loading={loading} />}
             {tab === 'upload'  && <UploadPanel tenant={tenant} onUploaded={() => setTimeout(load, 3500)} />}
             {tab === 'sources' && <SourcesPanel />}
+            {tab === 'pii'     && <PiiTab tenant={tenant} />}
           </div>
 
           {/* Right — sidebar */}
@@ -1156,7 +1279,7 @@ export default function App() {
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           <span style={{ color: C.dim, fontSize: 11 }}>
-            Cross Identity · AuditX Platform · Phase 1
+            Cross Identity · AuditX Platform · Phase 2
           </span>
           <div style={{ display: 'flex', gap: 16 }}>
             <span style={{ color: C.dim, fontSize: 11 }}>

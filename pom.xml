@@ -25,6 +25,9 @@
         <module>auditx-policy-engine</module>
         <module>auditx-compliance</module>
         <module>auditx-live-stream</module>
+        <module>auditx-pii-detector</module>
+        <module>auditx-enrichment</module>
+        <module>auditx-notification</module>
     </modules>
 
     <properties>

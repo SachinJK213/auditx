@@ -1,0 +1,873 @@
+{
+  "info": {
+    "name": "AuditX Platform — Complete API",
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "description": "Complete API collection for AuditX Identity Observability & Compliance Platform.\n\nCovers all 12 microservices across Phase 0, Phase 1, and Phase 2.\n\nImport this file into Postman, then set the Collection Variables (tenant_id, api_key) before running.\n\nSee POSTMAN.md for full setup instructions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "tenant_id",         "value": "tenant-demo",          "type": "string"},
+    {"key": "api_key",           "value": "demo-api-key",         "type": "string"},
+    {"key": "base_ingestion",    "value": "http://localhost:8081", "type": "string"},
+    {"key": "base_parser",       "value": "http://localhost:8082", "type": "string"},
+    {"key": "base_risk",         "value": "http://localhost:8083", "type": "string"},
+    {"key": "base_llm",          "value": "http://localhost:8084", "type": "string"},
+    {"key": "base_alert",        "value": "http://localhost:8085", "type": "string"},
+    {"key": "base_report",       "value": "http://localhost:8086", "type": "string"},
+    {"key": "base_policy",       "value": "http://localhost:8087", "type": "string"},
+    {"key": "base_compliance",   "value": "http://localhost:8088", "type": "string"},
+    {"key": "base_live_stream",  "value": "http://localhost:8089", "type": "string"},
+    {"key": "base_pii",          "value": "http://localhost:8090", "type": "string"},
+    {"key": "base_enrichment",   "value": "http://localhost:8091", "type": "string"},
+    {"key": "base_notification", "value": "http://localhost:8092", "type": "string"}
+  ],
+  "item": [
+    {
+      "name": "🏥 Health Checks",
+      "item": [
+        {
+          "name": "Ingestion Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_ingestion}}/actuator/health",
+              "host": ["{{base_ingestion}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Parser Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_parser}}/actuator/health",
+              "host": ["{{base_parser}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Risk Engine Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_risk}}/actuator/health",
+              "host": ["{{base_risk}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "LLM Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_llm}}/actuator/health",
+              "host": ["{{base_llm}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Alert Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_alert}}/actuator/health",
+              "host": ["{{base_alert}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Report Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_report}}/actuator/health",
+              "host": ["{{base_report}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Policy Engine Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_policy}}/actuator/health",
+              "host": ["{{base_policy}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Compliance Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_compliance}}/actuator/health",
+              "host": ["{{base_compliance}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Live Stream Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_live_stream}}/actuator/health",
+              "host": ["{{base_live_stream}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "PII Detector Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_pii}}/actuator/health",
+              "host": ["{{base_pii}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Enrichment Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_enrichment}}/actuator/health",
+              "host": ["{{base_enrichment}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        },
+        {
+          "name": "Notification Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_notification}}/actuator/health",
+              "host": ["{{base_notification}}"],
+              "path": ["actuator", "health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📥 Ingestion — REST API",
+      "item": [
+        {
+          "name": "Ingest Raw Event (Key=Value)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-API-Key", "value": "{{api_key}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payload\": \"timestamp=2024-06-01T12:00:00Z userId=alice action=LOGIN sourceIp=192.168.1.10 tenantId={{tenant_id}} outcome=SUCCESS\",\n  \"payloadType\": \"RAW\",\n  \"idempotencyKey\": \"postman-kv-001\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/api/events/raw",
+              "host": ["{{base_ingestion}}"],
+              "path": ["api", "events", "raw"]
+            }
+          }
+        },
+        {
+          "name": "Ingest JSON Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-API-Key", "value": "{{api_key}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payload\": \"{\\\"userId\\\":\\\"bob\\\",\\\"action\\\":\\\"DELETE_USER\\\",\\\"sourceIp\\\":\\\"10.0.0.5\\\",\\\"tenantId\\\":\\\"{{tenant_id}}\\\",\\\"outcome\\\":\\\"SUCCESS\\\",\\\"timestamp\\\":\\\"2024-06-01T12:05:00Z\\\"}\",\n  \"payloadType\": \"JSON\",\n  \"idempotencyKey\": \"postman-json-001\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/api/events/raw",
+              "host": ["{{base_ingestion}}"],
+              "path": ["api", "events", "raw"]
+            }
+          }
+        },
+        {
+          "name": "Ingest CSV Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-API-Key", "value": "{{api_key}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payload\": \"2024-06-01T12:10:00Z,carol,EXPORT_DATA,172.16.0.8,{{tenant_id}},SUCCESS\",\n  \"payloadType\": \"CSV\",\n  \"idempotencyKey\": \"postman-csv-001\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/api/events/raw",
+              "host": ["{{base_ingestion}}"],
+              "path": ["api", "events", "raw"]
+            }
+          }
+        },
+        {
+          "name": "Ingest Syslog Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-API-Key", "value": "{{api_key}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payload\": \"<34>2024-06-01T12:15:00Z webhost sshd: userId=mallory action=LOGIN outcome=FAILURE sourceIp=203.0.113.42 tenantId={{tenant_id}}\",\n  \"payloadType\": \"SYSLOG\",\n  \"idempotencyKey\": \"postman-syslog-001\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/api/events/raw",
+              "host": ["{{base_ingestion}}"],
+              "path": ["api", "events", "raw"]
+            }
+          }
+        },
+        {
+          "name": "Ingest Failed Login (triggers risk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-API-Key", "value": "{{api_key}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payload\": \"timestamp=2024-06-01T12:20:00Z userId=mallory action=LOGIN sourceIp=203.0.113.42 tenantId={{tenant_id}} outcome=FAILURE\",\n  \"payloadType\": \"RAW\",\n  \"idempotencyKey\": \"postman-fail-001\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/api/events/raw",
+              "host": ["{{base_ingestion}}"],
+              "path": ["api", "events", "raw"]
+            }
+          }
+        },
+        {
+          "name": "Test Idempotency (same key → 200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-API-Key", "value": "{{api_key}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payload\": \"timestamp=2024-06-01T12:00:00Z userId=alice action=LOGIN sourceIp=192.168.1.10 tenantId={{tenant_id}} outcome=SUCCESS\",\n  \"payloadType\": \"RAW\",\n  \"idempotencyKey\": \"postman-kv-001\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/api/events/raw",
+              "host": ["{{base_ingestion}}"],
+              "path": ["api", "events", "raw"]
+            }
+          }
+        },
+        {
+          "name": "Test Missing API Key (→ 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payload\": \"test\",\n  \"payloadType\": \"RAW\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/api/events/raw",
+              "host": ["{{base_ingestion}}"],
+              "path": ["api", "events", "raw"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔗 Webhook Connector",
+      "item": [
+        {
+          "name": "Register Webhook Source",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "X-API-Key", "value": "{{api_key}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sourceId\": \"github-prod\",\n  \"tenantId\": \"{{tenant_id}}\",\n  \"description\": \"GitHub production webhook\",\n  \"active\": true\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/webhook/sources",
+              "host": ["{{base_ingestion}}"],
+              "path": ["webhook", "sources"]
+            }
+          }
+        },
+        {
+          "name": "Send Event via Webhook (GitHub-style)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"member_removed\",\n  \"sender\": {\"login\": \"mallory\"},\n  \"repository\": {\"full_name\": \"org/repo\"},\n  \"installation\": {\"id\": 12345}\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/webhook/github-prod",
+              "host": ["{{base_ingestion}}"],
+              "path": ["webhook", "github-prod"]
+            }
+          }
+        },
+        {
+          "name": "Send Event via Webhook (Okta-style)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventType\": \"user.session.start\",\n  \"actor\": {\"login\": \"alice\", \"ipAddress\": \"192.168.1.10\"},\n  \"outcome\": {\"result\": \"SUCCESS\"},\n  \"published\": \"2024-06-01T12:00:00Z\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_ingestion}}/webhook/github-prod",
+              "host": ["{{base_ingestion}}"],
+              "path": ["webhook", "github-prod"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Dashboard & Reports",
+      "item": [
+        {
+          "name": "Dashboard Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_report}}/api/dashboard/summary?tenantId={{tenant_id}}&days=30",
+              "host": ["{{base_report}}"],
+              "path": ["api", "dashboard", "summary"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"},
+                {"key": "days", "value": "30"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dashboard Events (last 7 days)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_report}}/api/dashboard/events?tenantId={{tenant_id}}&days=7&limit=50",
+              "host": ["{{base_report}}"],
+              "path": ["api", "dashboard", "events"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"},
+                {"key": "days", "value": "7"},
+                {"key": "limit", "value": "50"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Dashboard Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_report}}/api/dashboard/alerts?tenantId={{tenant_id}}&days=30",
+              "host": ["{{base_report}}"],
+              "path": ["api", "dashboard", "alerts"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"},
+                {"key": "days", "value": "30"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate Full Compliance Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenant_id}}\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\",\n  \"reportType\": \"FULL\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_report}}/api/reports/generate",
+              "host": ["{{base_report}}"],
+              "path": ["api", "reports", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Generate Report — Missing tenantId (→ 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\",\n  \"reportType\": \"FULL\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_report}}/api/reports/generate",
+              "host": ["{{base_report}}"],
+              "path": ["api", "reports", "generate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔴 Risk Engine",
+      "item": [
+        {
+          "name": "Get User Risk Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_risk}}/api/user-risk?tenantId={{tenant_id}}&userId=mallory",
+              "host": ["{{base_risk}}"],
+              "path": ["api", "user-risk"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"},
+                {"key": "userId", "value": "mallory"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All User Risk Profiles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_risk}}/api/user-risk?tenantId={{tenant_id}}",
+              "host": ["{{base_risk}}"],
+              "path": ["api", "user-risk"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "⚠️ Alerts",
+      "item": [
+        {
+          "name": "List Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_alert}}/api/alerts?tenantId={{tenant_id}}",
+              "host": ["{{base_alert}}"],
+              "path": ["api", "alerts"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Acknowledge Alert",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "description": "Replace REPLACE_ALERT_ID with a real alertId from the List Alerts response.",
+            "url": {
+              "raw": "{{base_alert}}/api/alerts/REPLACE_ALERT_ID/acknowledge",
+              "host": ["{{base_alert}}"],
+              "path": ["api", "alerts", "REPLACE_ALERT_ID", "acknowledge"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Policy Rules",
+      "item": [
+        {
+          "name": "Create Policy Rule — Failed Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenant_id}}\",\n  \"name\": \"Block Mass Failed Logins\",\n  \"condition\": \"#action == 'LOGIN' && #outcome == 'FAILURE' && #riskScore > 50\",\n  \"severity\": \"CRITICAL\",\n  \"complianceFrameworks\": [\"GDPR\", \"DPDP\"],\n  \"enabled\": true\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_policy}}/api/policy-rules",
+              "host": ["{{base_policy}}"],
+              "path": ["api", "policy-rules"]
+            }
+          }
+        },
+        {
+          "name": "Create Policy Rule — Data Export",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenant_id}}\",\n  \"name\": \"Flag Data Exports\",\n  \"condition\": \"#action == 'EXPORT_DATA'\",\n  \"severity\": \"HIGH\",\n  \"complianceFrameworks\": [\"GDPR\", \"SOC2\"],\n  \"enabled\": true\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_policy}}/api/policy-rules",
+              "host": ["{{base_policy}}"],
+              "path": ["api", "policy-rules"]
+            }
+          }
+        },
+        {
+          "name": "List Policy Rules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_policy}}/api/policy-rules?tenantId={{tenant_id}}",
+              "host": ["{{base_policy}}"],
+              "path": ["api", "policy-rules"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Policy Rule",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "Replace REPLACE_RULE_ID with an id from List Policy Rules.",
+            "url": {
+              "raw": "{{base_policy}}/api/policy-rules/REPLACE_RULE_ID",
+              "host": ["{{base_policy}}"],
+              "path": ["api", "policy-rules", "REPLACE_RULE_ID"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "✅ Compliance",
+      "item": [
+        {
+          "name": "GDPR Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_compliance}}/api/compliance/GDPR/summary?tenantId={{tenant_id}}",
+              "host": ["{{base_compliance}}"],
+              "path": ["api", "compliance", "GDPR", "summary"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "GDPR Records",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_compliance}}/api/compliance/GDPR/records?tenantId={{tenant_id}}",
+              "host": ["{{base_compliance}}"],
+              "path": ["api", "compliance", "GDPR", "records"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "SOC2 Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_compliance}}/api/compliance/SOC2/summary?tenantId={{tenant_id}}",
+              "host": ["{{base_compliance}}"],
+              "path": ["api", "compliance", "SOC2", "summary"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "DPDP Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_compliance}}/api/compliance/DPDP/summary?tenantId={{tenant_id}}",
+              "host": ["{{base_compliance}}"],
+              "path": ["api", "compliance", "DPDP", "summary"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "ISO27001 Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_compliance}}/api/compliance/ISO27001/summary?tenantId={{tenant_id}}",
+              "host": ["{{base_compliance}}"],
+              "path": ["api", "compliance", "ISO27001", "summary"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🤖 LLM — AI Features",
+      "item": [
+        {
+          "name": "Explain Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenant_id}}\",\n  \"eventId\": \"REPLACE_EVENT_ID\",\n  \"question\": \"Why is this event flagged as high risk?\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_llm}}/api/llm/explain",
+              "host": ["{{base_llm}}"],
+              "path": ["api", "llm", "explain"]
+            }
+          }
+        },
+        {
+          "name": "Natural Language Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenant_id}}\",\n  \"query\": \"Show me all failed login attempts from mallory in the last 7 days\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_llm}}/api/llm/query",
+              "host": ["{{base_llm}}"],
+              "path": ["api", "llm", "query"]
+            }
+          }
+        },
+        {
+          "name": "Summarize Activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenant_id}}\",\n  \"days\": 7\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_llm}}/api/llm/summarize",
+              "host": ["{{base_llm}}"],
+              "path": ["api", "llm", "summarize"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 PII Detection (Phase 2)",
+      "item": [
+        {
+          "name": "PII Findings (7 days)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_pii}}/api/pii/findings?tenantId={{tenant_id}}&days=7",
+              "host": ["{{base_pii}}"],
+              "path": ["api", "pii", "findings"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"},
+                {"key": "days", "value": "7"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "PII Summary (30 days)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_pii}}/api/pii/summary?tenantId={{tenant_id}}&days=30",
+              "host": ["{{base_pii}}"],
+              "path": ["api", "pii", "summary"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"},
+                {"key": "days", "value": "30"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌍 Geo-IP Enrichment (Phase 2)",
+      "item": [
+        {
+          "name": "Enriched Events (7 days)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_enrichment}}/api/enrichment/events?tenantId={{tenant_id}}&days=7",
+              "host": ["{{base_enrichment}}"],
+              "path": ["api", "enrichment", "events"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"},
+                {"key": "days", "value": "7"}
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 Notifications (Phase 2)",
+      "item": [
+        {
+          "name": "Add Slack Channel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"{{tenant_id}}\",\n  \"channel\": \"SLACK\",\n  \"webhookUrl\": \"https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK\",\n  \"enabled\": true\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{base_notification}}/api/notification/channels",
+              "host": ["{{base_notification}}"],
+              "path": ["api", "notification", "channels"]
+            }
+          }
+        },
+        {
+          "name": "List Notification Channels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_notification}}/api/notification/channels?tenantId={{tenant_id}}",
+              "host": ["{{base_notification}}"],
+              "path": ["api", "notification", "channels"],
+              "query": [
+                {"key": "tenantId", "value": "{{tenant_id}}"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Notification Channel",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "description": "Replace REPLACE_CHANNEL_ID with a channel id from List Notification Channels.",
+            "url": {
+              "raw": "{{base_notification}}/api/notification/channels/REPLACE_CHANNEL_ID",
+              "host": ["{{base_notification}}"],
+              "path": ["api", "notification", "channels", "REPLACE_CHANNEL_ID"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

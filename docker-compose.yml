@@ -324,6 +324,81 @@ services:
       service: auditx-live-stream
     restart: unless-stopped
 
+  auditx-pii-detector:
+    build:
+      context: .
+      dockerfile: auditx-pii-detector/Dockerfile
+    container_name: auditx-pii-detector
+    ports:
+      - "${PII_DETECTOR_PORT:-8090}:8090"
+    environment:
+      SPRING_PROFILES_ACTIVE: onprem
+      MONGODB_URI: mongodb://mongodb:27017/auditx
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      PII_DETECTOR_PORT: 8090
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        labels: "service"
+    labels:
+      service: auditx-pii-detector
+    restart: unless-stopped
+
+  auditx-enrichment:
+    build:
+      context: .
+      dockerfile: auditx-enrichment/Dockerfile
+    container_name: auditx-enrichment
+    ports:
+      - "${ENRICHMENT_PORT:-8091}:8091"
+    environment:
+      SPRING_PROFILES_ACTIVE: onprem
+      MONGODB_URI: mongodb://mongodb:27017/auditx
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      ENRICHMENT_PORT: 8091
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        labels: "service"
+    labels:
+      service: auditx-enrichment
+    restart: unless-stopped
+
+  auditx-notification:
+    build:
+      context: .
+      dockerfile: auditx-notification/Dockerfile
+    container_name: auditx-notification
+    ports:
+      - "${NOTIFICATION_PORT:-8092}:8092"
+    environment:
+      SPRING_PROFILES_ACTIVE: onprem
+      MONGODB_URI: mongodb://mongodb:27017/auditx
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      NOTIFICATION_PORT: 8092
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        labels: "service"
+    labels:
+      service: auditx-notification
+    restart: unless-stopped
+
   # ─── Dashboard UI ────────────────────────────────────────────────────────
 
   auditx-dashboard:
@@ -341,6 +416,8 @@ services:
       - auditx-report
       - auditx-ingestion
       - auditx-live-stream
+      - auditx-pii-detector
+      - auditx-notification
     restart: unless-stopped
 
   # ─── ELK Stack ───────────────────────────────────────────────────────────
